@@ -292,12 +292,12 @@ const Search = () => {
     1: setEvents
   } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]);
   const {
+    0: currentEvents,
+    1: setCurrentEvents
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])([]);
+  const {
     0: isLoading,
     1: setLoading
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
-  const {
-    0: isError,
-    1: setError
   } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
   const {
     0: eventsNo,
@@ -308,12 +308,13 @@ const Search = () => {
     1: setTotalPages
   } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(1);
   /**
-   * the API does not return total number of items so in order to create proper pagination this have to be done manually
+   * setting up local state as database
    */
 
-  const createPagination = async () => {
+  const getInitialData = async () => {
     let data = [];
     let page = 1;
+    setLoading(true);
 
     while (true) {
       const r = await axios__WEBPACK_IMPORTED_MODULE_3___default.a.get(`https://mock-api.drinks.test.siliconrhino.io/events?page=${page}&pageSize=20`);
@@ -326,11 +327,14 @@ const Search = () => {
       }
     }
 
+    setEvents(data);
     setTotalPages(Math.floor(eventsNo / pageSize) + 1);
+    setLoading(false);
+    getEvents(); // not working
   };
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    createPagination();
+    getInitialData();
   }, []);
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
     getEvents();
@@ -340,30 +344,16 @@ const Search = () => {
   }, [pageSize]);
 
   const getEvents = async () => {
-    setLoading(true);
-
-    try {
-      const res = await axios__WEBPACK_IMPORTED_MODULE_3___default.a.get(`https://mock-api.drinks.test.siliconrhino.io/events?page=${pageNo}&pageSize=${pageSize}&search=${searchQ}`);
-      const evnts = res.data;
-      setEvents(evnts);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      setError(true);
-    }
+    let newEvents = [];
+    console.log('getEvents allEvents: ', allEvents);
+    allEvents.map(event => {
+      if (event.id > (pageNo - 1) * pageSize || event.id < pageNo * pageSize) {
+        newEvents.push(event);
+      }
+    });
+    console.log('newEvents: ', newEvents);
+    setCurrentEvents(newEvents);
   };
-
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {}, []);
-
-  if (isError) {
-    return __jsx("div", {
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 89
-      },
-      __self: undefined
-    }, "Failed to load data.");
-  }
 
   const pageButtons = () => {
     let buttons = [];
@@ -375,7 +365,7 @@ const Search = () => {
         onClick: () => selectPageNo(i),
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 97
+          lineNumber: 93
         },
         __self: undefined
       }, i + 1));
@@ -387,7 +377,7 @@ const Search = () => {
   return __jsx(SearchWrapper, {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 104
+      lineNumber: 100
     },
     __self: undefined
   }, __jsx(SearchInput, {
@@ -398,22 +388,22 @@ const Search = () => {
     onChange: event => setSearchQ(event.target.value),
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 105
+      lineNumber: 101
     },
     __self: undefined
   }), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 112
+      lineNumber: 108
     },
     __self: undefined
   }, "events: "), isLoading ? __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 115
+      lineNumber: 111
     },
     __self: undefined
-  }, "loading...") : allEvents.map(event => __jsx(_event_EventThumbnail__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  }, "loading...") : currentEvents.map(event => __jsx(_event_EventThumbnail__WEBPACK_IMPORTED_MODULE_4__["default"], {
     key: event.id,
     id: event.id,
     time: event.time,
@@ -425,25 +415,25 @@ const Search = () => {
     comments: event.comments,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 118
+      lineNumber: 114
     },
     __self: undefined
   })), __jsx(PageNumberButtonWrapper, {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 131
+      lineNumber: 127
     },
     __self: undefined
   }, __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 132
+      lineNumber: 128
     },
     __self: undefined
   }, "Select page:"), pageButtons(), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 134
+      lineNumber: 130
     },
     __self: undefined
   }, "Items per page:"), __jsx(SearchParamButton, {
@@ -451,7 +441,7 @@ const Search = () => {
     onClick: () => setPageSize(5),
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 135
+      lineNumber: 131
     },
     __self: undefined
   }, "5"), __jsx(SearchParamButton, {
@@ -459,7 +449,7 @@ const Search = () => {
     onClick: () => setPageSize(15),
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 136
+      lineNumber: 132
     },
     __self: undefined
   }, "15"), __jsx(SearchParamButton, {
@@ -467,7 +457,7 @@ const Search = () => {
     onClick: () => setPageSize(25),
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 137
+      lineNumber: 133
     },
     __self: undefined
   }, "25")));

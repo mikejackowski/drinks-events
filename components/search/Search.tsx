@@ -34,17 +34,18 @@ const Search = () => {
   const [pageSize, setPageSize] = useState(5)
   const [searchQ, setSearchQ] = useState('')
   const [allEvents, setEvents] = useState<Event[]>([])
+  const [currentEvents, setCurrentEvents] = useState<Event[]>([])
   const [isLoading, setLoading] = useState(false)
-  const [isError, setError] = useState(false)
   const [eventsNo, setEventsNo] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
 
   /**
-   * the API does not return total number of items so in order to create proper pagination this have to be done manually
+   * setting up local state as database
    */
-  const createPagination = async () => {
+  const getInitialData = async () => {
     let data = [];
     let page = 1;
+    setLoading(true)
     while(true) {
       const r = await axios.get(`https://mock-api.drinks.test.siliconrhino.io/events?page=${page}&pageSize=20`);
       page++;
@@ -54,11 +55,14 @@ const Search = () => {
         break;
       }
     }
+    setEvents(data)
     setTotalPages(Math.floor(eventsNo / pageSize) + 1)
+    setLoading(false)
+    getEvents() // not working
   }
 
   useEffect(() => {
-    createPagination();
+    getInitialData();
   }, [])
 
   useEffect(() => {
@@ -70,24 +74,16 @@ const Search = () => {
   }, [pageSize])
 
   const getEvents = async () => {
-    setLoading(true)
-    try {
-      const res = await axios.get(`https://mock-api.drinks.test.siliconrhino.io/events?page=${pageNo}&pageSize=${pageSize}&search=${searchQ}`)
-      const evnts: Event[] = res.data
-      setEvents(evnts)
-      setLoading(false)
-    }
-    catch (err) {
-      setLoading(false)
-      setError(true)
-    }
-  }
+    let newEvents: Event[] = [];
+    console.log('getEvents allEvents: ', allEvents);
+    allEvents.map((event) => {
+      if (event.id > (pageNo - 1) * pageSize || event.id < pageNo * pageSize) {
+        newEvents.push(event)
+      }
+    })
+    console.log('newEvents: ', newEvents)
+    setCurrentEvents(newEvents);
 
-  useEffect(() => {}, [])
-  if (isError) {
-    return (
-      <div>Failed to load data.</div>
-    )
   }
 
   const pageButtons = () => {
@@ -114,7 +110,7 @@ const Search = () => {
         isLoading ?
         <div>loading...</div>
       :
-        allEvents.map((event) => (
+        currentEvents.map((event) => (
           <EventThumbnail
             key={event.id}
             id={event.id}

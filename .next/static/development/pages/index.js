@@ -204,13 +204,13 @@ var Search = function Search() {
       allEvents = _useState4[0],
       setEvents = _useState4[1];
 
-  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(false),
-      isLoading = _useState5[0],
-      setLoading = _useState5[1];
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])([]),
+      currentEvents = _useState5[0],
+      setCurrentEvents = _useState5[1];
 
   var _useState6 = Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(false),
-      isError = _useState6[0],
-      setError = _useState6[1];
+      isLoading = _useState6[0],
+      setLoading = _useState6[1];
 
   var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(0),
       eventsNo = _useState7[0],
@@ -220,46 +220,50 @@ var Search = function Search() {
       totalPages = _useState8[0],
       setTotalPages = _useState8[1];
   /**
-   * the API does not return total number of items so in order to create proper pagination this have to be done manually
+   * setting up local state as database
    */
 
 
-  var createPagination = function createPagination() {
+  var getInitialData = function getInitialData() {
     var data, page, r;
-    return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.async(function createPagination$(_context) {
+    return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.async(function getInitialData$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             data = [];
             page = 1;
+            setLoading(true);
 
-          case 2:
+          case 3:
             if (false) {}
 
-            _context.next = 5;
+            _context.next = 6;
             return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios__WEBPACK_IMPORTED_MODULE_5___default.a.get("https://mock-api.drinks.test.siliconrhino.io/events?page=".concat(page, "&pageSize=20")));
 
-          case 5:
+          case 6:
             r = _context.sent;
             page++;
             data.push.apply(data, Object(_babel_runtime_corejs2_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__["default"])(r.data));
 
             if (!(r.data.length === 0)) {
-              _context.next = 11;
+              _context.next = 12;
               break;
             }
 
             setEventsNo(r.data.length);
-            return _context.abrupt("break", 13);
+            return _context.abrupt("break", 14);
 
-          case 11:
-            _context.next = 2;
+          case 12:
+            _context.next = 3;
             break;
 
-          case 13:
-            setTotalPages(Math.floor(eventsNo / pageSize) + 1);
-
           case 14:
+            setEvents(data);
+            setTotalPages(Math.floor(eventsNo / pageSize) + 1);
+            setLoading(false);
+            getEvents(); // not working
+
+          case 18:
           case "end":
             return _context.stop();
         }
@@ -268,7 +272,7 @@ var Search = function Search() {
   };
 
   Object(react__WEBPACK_IMPORTED_MODULE_2__["useEffect"])(function () {
-    createPagination();
+    getInitialData();
   }, []);
   Object(react__WEBPACK_IMPORTED_MODULE_2__["useEffect"])(function () {
     getEvents();
@@ -278,49 +282,28 @@ var Search = function Search() {
   }, [pageSize]);
 
   var getEvents = function getEvents() {
-    var res, evnts;
+    var newEvents;
     return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.async(function getEvents$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            setLoading(true);
-            _context2.prev = 1;
-            _context2.next = 4;
-            return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios__WEBPACK_IMPORTED_MODULE_5___default.a.get("https://mock-api.drinks.test.siliconrhino.io/events?page=".concat(pageNo, "&pageSize=").concat(pageSize, "&search=").concat(searchQ)));
+            newEvents = [];
+            console.log('getEvents allEvents: ', allEvents);
+            allEvents.map(function (event) {
+              if (event.id > (pageNo - 1) * pageSize || event.id < pageNo * pageSize) {
+                newEvents.push(event);
+              }
+            });
+            console.log('newEvents: ', newEvents);
+            setCurrentEvents(newEvents);
 
-          case 4:
-            res = _context2.sent;
-            evnts = res.data;
-            setEvents(evnts);
-            setLoading(false);
-            _context2.next = 14;
-            break;
-
-          case 10:
-            _context2.prev = 10;
-            _context2.t0 = _context2["catch"](1);
-            setLoading(false);
-            setError(true);
-
-          case 14:
+          case 5:
           case "end":
             return _context2.stop();
         }
       }
-    }, null, null, [[1, 10]]);
+    });
   };
-
-  Object(react__WEBPACK_IMPORTED_MODULE_2__["useEffect"])(function () {}, []);
-
-  if (isError) {
-    return __jsx("div", {
-      __source: {
-        fileName: _jsxFileName,
-        lineNumber: 89
-      },
-      __self: this
-    }, "Failed to load data.");
-  }
 
   var pageButtons = function pageButtons() {
     var buttons = [];
@@ -334,7 +317,7 @@ var Search = function Search() {
         },
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 97
+          lineNumber: 93
         },
         __self: this
       }, i + 1));
@@ -350,7 +333,7 @@ var Search = function Search() {
   return __jsx(SearchWrapper, {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 104
+      lineNumber: 100
     },
     __self: this
   }, __jsx(SearchInput, {
@@ -363,22 +346,22 @@ var Search = function Search() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 105
+      lineNumber: 101
     },
     __self: this
   }), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 112
+      lineNumber: 108
     },
     __self: this
   }, "events: "), isLoading ? __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 115
+      lineNumber: 111
     },
     __self: this
-  }, "loading...") : allEvents.map(function (event) {
+  }, "loading...") : currentEvents.map(function (event) {
     return __jsx(_event_EventThumbnail__WEBPACK_IMPORTED_MODULE_6__["default"], {
       key: event.id,
       id: event.id,
@@ -391,26 +374,26 @@ var Search = function Search() {
       comments: event.comments,
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 118
+        lineNumber: 114
       },
       __self: this
     });
   }), __jsx(PageNumberButtonWrapper, {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 131
+      lineNumber: 127
     },
     __self: this
   }, __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 132
+      lineNumber: 128
     },
     __self: this
   }, "Select page:"), pageButtons(), __jsx("div", {
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 134
+      lineNumber: 130
     },
     __self: this
   }, "Items per page:"), __jsx(SearchParamButton, {
@@ -420,7 +403,7 @@ var Search = function Search() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 135
+      lineNumber: 131
     },
     __self: this
   }, "5"), __jsx(SearchParamButton, {
@@ -430,7 +413,7 @@ var Search = function Search() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 136
+      lineNumber: 132
     },
     __self: this
   }, "15"), __jsx(SearchParamButton, {
@@ -440,7 +423,7 @@ var Search = function Search() {
     },
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 137
+      lineNumber: 133
     },
     __self: this
   }, "25")));
