@@ -1,0 +1,32 @@
+{
+  "name": "siliconrhino",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/next": "^9.0.0",
+    "@types/styled-components": "^4.4.2",
+    "@zeit/next-typescript": "^1.1.1",
+    "axios": "^0.19.1",
+    "geolib": "^3.2.1",
+    "next": "^9.2.0",
+    "react": "^16.12.0",
+    "react-debounce-input": "^3.2.2",
+    "react-dom": "^16.12.0",
+    "styled-components": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.1.8",
+    "@types/react": "^16.9.17",
+    "babel-plugin-styled-components": "^1.10.6",
+    "typescript": "^3.7.5"
+  }
+}
