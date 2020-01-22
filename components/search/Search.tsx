@@ -34,10 +34,7 @@ const Search = () => {
   const [pageSize, setPageSize] = useState(5)
   const [searchQ, setSearchQ] = useState('')
   const [allEvents, setEvents] = useState<Event[]>([])
-  const [currentEvents, setCurrentEvents] = useState<Event[]>([])
   const [isLoading, setLoading] = useState(false)
-  const [eventsNo, setEventsNo] = useState(0)
-  const [totalPages, setTotalPages] = useState(1)
 
   /**
    * setting up local state as database
@@ -50,15 +47,10 @@ const Search = () => {
       const r = await axios.get(`https://mock-api.drinks.test.siliconrhino.io/events?page=${page}&pageSize=20`);
       page++;
       data.push(...r.data);
-      if(r.data.length === 0) {
-        setEventsNo(r.data.length)
-        break;
-      }
+      if(r.data.length === 0) break;
     }
     setEvents(data)
-    setTotalPages(Math.floor(eventsNo / pageSize) + 1)
     setLoading(false)
-    getEvents() // not working
   }
 
   useEffect(() => {
@@ -69,25 +61,31 @@ const Search = () => {
     getEvents()
   }, [pageSize, pageNo, searchQ])
 
-  useEffect(() => {
-    setTotalPages(Math.floor(eventsNo / pageSize) + 1)
-  }, [pageSize])
-
   const getEvents = async () => {
-    let newEvents: Event[] = [];
-    console.log('getEvents allEvents: ', allEvents);
+    let newEvents: JSX.Element[] = [];
     allEvents.map((event) => {
       if (event.id > (pageNo - 1) * pageSize || event.id < pageNo * pageSize) {
-        newEvents.push(event)
+        newEvents.push(
+          <EventThumbnail
+            key={event.id}
+            id={event.id}
+            time={event.time}
+            title={event.title}
+            creator={event.creator}
+            guests={event.guests}
+            type={event.type}
+            location={event.location}
+            comments={event.comments}
+          />
+        )
       }
     })
-    console.log('newEvents: ', newEvents)
-    setCurrentEvents(newEvents);
-
+    return newEvents
   }
 
   const pageButtons = () => {
     let buttons: JSX.Element[] = []
+    let totalPages = Math.floor(allEvents.length / pageSize) + 1
     for (let i = 0; i < totalPages; i++) {
       buttons.push(
         <SearchParamButton key={i} isSelected={pageNo === i} onClick={() => selectPageNo(i)}>{i+1}</SearchParamButton>
@@ -110,19 +108,7 @@ const Search = () => {
         isLoading ?
         <div>loading...</div>
       :
-        currentEvents.map((event) => (
-          <EventThumbnail
-            key={event.id}
-            id={event.id}
-            time={event.time}
-            title={event.title}
-            creator={event.creator}
-            guests={event.guests}
-            type={event.type}
-            location={event.location}
-            comments={event.comments}
-          />
-        ))
+        getEvents()
       }
       <PageNumberButtonWrapper>
         <div>Select page:</div>
