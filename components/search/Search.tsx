@@ -57,10 +57,6 @@ const Search = () => {
     getInitialData();
   }, [])
 
-  useEffect(() => {
-    getEvents()
-  }, [pageSize, pageNo, searchQ])
-
   const getEvents = async () => {
     let newEvents: JSX.Element[] = [];
     allEvents.map((event) => {
@@ -99,6 +95,7 @@ const Search = () => {
       <SearchInput
         minLength={1}
         debounceTimeout={300}
+        value={searchQ}
         placeholder={'asdf'}
         //@ts-ignore
         onChange={event => setSearchQ(event.target.value)}
