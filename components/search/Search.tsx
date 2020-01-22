@@ -57,26 +57,8 @@ const Search = () => {
     getInitialData();
   }, [])
 
-  const getEvents = async () => {
-    let newEvents: JSX.Element[] = [];
-    allEvents.map((event) => {
-      if (event.id > (pageNo - 1) * pageSize || event.id < pageNo * pageSize) {
-        newEvents.push(
-          <EventThumbnail
-            key={event.id}
-            id={event.id}
-            time={event.time}
-            title={event.title}
-            creator={event.creator}
-            guests={event.guests}
-            type={event.type}
-            location={event.location}
-            comments={event.comments}
-          />
-        )
-      }
-    })
-    return newEvents
+  const getEvents = () => {
+    return allEvents.slice(pageNo*pageSize, pageNo*pageSize+pageSize)
   }
 
   const pageButtons = () => {
@@ -89,7 +71,7 @@ const Search = () => {
     }
     return buttons
   }
-
+  const currentEvents: Event[] = getEvents()
   return (
     <SearchWrapper>
       <SearchInput
@@ -105,7 +87,19 @@ const Search = () => {
         isLoading ?
         <div>loading...</div>
       :
-        getEvents()
+        currentEvents.map((event) => {
+          <EventThumbnail
+            key={event.id}
+            id={event.id}
+            time={event.time}
+            title={event.title}
+            creator={event.creator}
+            guests={event.guests}
+            type={event.type}
+            location={event.location}
+            comments={event.comments}
+          />
+        })
       }
       <PageNumberButtonWrapper>
         <div>Select page:</div>
