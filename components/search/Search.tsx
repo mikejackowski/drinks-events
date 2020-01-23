@@ -60,7 +60,7 @@ const Search = () => {
   const getEvents = () => {
     let displayevents: Event[] = []
     if (searchQ !== '') {
-      displayevents = allEvents.filter((event) => event.title.includes(searchQ))
+      displayevents = allEvents.filter((event) => event.title.toLowerCase().includes(searchQ.toLowerCase()))
       return displayevents.slice(pageNo*pageSize, pageNo*pageSize+pageSize)
     } else {
       return allEvents.slice(pageNo*pageSize, pageNo*pageSize+pageSize)
@@ -76,7 +76,11 @@ const Search = () => {
 
   const pageButtons = () => {
     let buttons: JSX.Element[] = []
-    let totalPages = Math.floor(allEvents.length / pageSize) + 1
+    let displayEvents = allEvents.length;
+    if (searchQ !== '') {
+      displayEvents = allEvents.filter((event) => event.title.includes(searchQ)).length
+    }
+    let totalPages = Math.floor(displayEvents / pageSize) + 1
     for (let i = 0; i < totalPages; i++) {
       buttons.push(
         <SearchParamButton key={i} isSelected={pageNo === i} onClick={() => selectPageNo(i)}>{i+1}</SearchParamButton>
