@@ -3,6 +3,7 @@ import { Event } from '../../pages/e/event.types'
 import { Colors, BoxShadows } from '../../theme/colors'
 import { useState, useEffect } from 'react'
 import getDistance from 'geolib/es/getDistance';
+import React from 'react';
 
 const EventThumbnailWrapper = styled.div`
   display: flex;
@@ -30,10 +31,10 @@ const ThumbnailTitle = styled.div`
 
 const LocationWrapper = styled.div``
 
-const EventThumbnail = (event: Event) => {
-  const [userLat, setUserLat] = useState<number>(0);
-  const [userLon, setUserLon] = useState<number>(0);
 
+const EventThumbnail = React.forwardRef((event: Event, ref: any) => {
+  const [userLat, setUserLat] = useState<number>(0)
+  const [userLon, setUserLon] = useState<number>(0)
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position: Position) => {
       setUserLat(position.coords.latitude)
@@ -42,16 +43,18 @@ const EventThumbnail = (event: Event) => {
   }, [])
   const eventLat = event.location.latitude
   const eventLon = event.location.longitude
+
   return (
-    <EventThumbnailWrapper>
-    <TitleWrapper>
-      <IdWrapper>#{event.id}</IdWrapper>
-      <ThumbnailTitle>{event.title}</ThumbnailTitle>
-      <LocationWrapper>{getDistance({latitude: userLat, longitude: userLon}, {latitude: eventLat, longitude: eventLon}, 100)/1000}</LocationWrapper>
-    </TitleWrapper>
+    <EventThumbnailWrapper ref={ref}>
+      <TitleWrapper>
+        <IdWrapper>#{event.id}</IdWrapper>
+        <ThumbnailTitle>{event.title}</ThumbnailTitle>
+        <LocationWrapper>{getDistance({latitude: userLat, longitude: userLon}, {latitude: eventLat, longitude: eventLon}, 100)/1000}</LocationWrapper>
+      </TitleWrapper>
   </EventThumbnailWrapper>
   )
 }
+)
 
 
 export default EventThumbnail

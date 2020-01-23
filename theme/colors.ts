@@ -2,6 +2,11 @@ export const Colors = {
   gray: '#b7b7b7',
   black: '#000',
   white: '#fff',
+  gold: '#E5CB90',
+  yellow: '#DBB561',
+  green: '#5DAB7C',
+  brown: '#4C3800',
+  red: 'BB6B62',
 }
 
 export const BoxShadows = {

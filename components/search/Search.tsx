@@ -4,6 +4,8 @@ import {DebounceInput} from 'react-debounce-input'
 import axios from 'axios'
 import { Event } from '../../pages/e/event.types'
 import EventThumbnail from '../event/EventThumbnail'
+import Link from 'next/link'
+import React from 'react'
 
 const SearchWrapper = styled.div`
 `
@@ -30,7 +32,7 @@ const PageNumberButtonWrapper = styled.div`
 
 
 const Search = () => {
-  const [pageNo, selectPageNo] = useState(0)
+  const [pageNo, setPageNo] = useState(0)
   const [pageSize, setPageSize] = useState(5)
   const [searchQ, setSearchQ] = useState('')
   const [allEvents, setEvents] = useState<Event[]>([])
@@ -70,7 +72,7 @@ const Search = () => {
   const changePageSize = (newSize: number) => {
     setPageSize(newSize)
     if (newSize > allEvents.length) {
-      selectPageNo(0)
+      setPageNo(0)
     }
   }
 
@@ -83,22 +85,23 @@ const Search = () => {
     let totalPages = Math.floor(displayEvents / pageSize) + 1
     for (let i = 0; i < totalPages; i++) {
       buttons.push(
-        <SearchParamButton key={i} isSelected={pageNo === i} onClick={() => selectPageNo(i)}>{i+1}</SearchParamButton>
+        <SearchParamButton key={i} isSelected={pageNo === i} onClick={() => setPageNo(i)}>{i+1}</SearchParamButton>
       )
     }
     return buttons
   }
   let currentEvents: Event[] = getEvents()
-
   return (
-    <SearchWrapper>
+    <SearchWrapper onClick={() => {}}>
       <SearchInput
         minLength={1}
         debounceTimeout={300}
         value={searchQ}
         placeholder={'asdf'}
-        //@ts-ignore
-        onChange={event => setSearchQ(event.target.value)}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          setPageNo(0)
+          setSearchQ(event.target.value)
+        }}
       />
       <div>events: </div>
       {
@@ -106,17 +109,18 @@ const Search = () => {
         <div>loading...</div>
       :
         currentEvents.map((event) => (
-          <EventThumbnail
-            key={event.id}
-            id={event.id}
-            time={event.time}
-            title={event.title}
-            creator={event.creator}
-            guests={event.guests}
-            type={event.type}
-            location={event.location}
-            comments={event.comments}
-          />
+          <Link passHref={true} key={event.id} href={'/e/[id]'} as={`/e/${event.id}`}>
+            <EventThumbnail
+              id={event.id}
+              time={event.time}
+              title={event.title}
+              creator={event.creator}
+              guests={event.guests}
+              type={event.type}
+              location={event.location}
+              comments={event.comments}
+            />
+          </Link>
         ))
       }
       <PageNumberButtonWrapper>
