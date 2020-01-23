@@ -58,7 +58,20 @@ const Search = () => {
   }, [])
 
   const getEvents = () => {
-    return allEvents.slice(pageNo*pageSize, pageNo*pageSize+pageSize)
+    let displayevents: Event[] = []
+    if (searchQ !== '') {
+      displayevents = allEvents.filter((event) => event.title.includes(searchQ))
+      return displayevents.slice(pageNo*pageSize, pageNo*pageSize+pageSize)
+    } else {
+      return allEvents.slice(pageNo*pageSize, pageNo*pageSize+pageSize)
+    }
+  }
+
+  const changePageSize = (newSize: number) => {
+    setPageSize(newSize)
+    if (newSize > allEvents.length) {
+      selectPageNo(0)
+    }
   }
 
   const pageButtons = () => {
@@ -71,7 +84,8 @@ const Search = () => {
     }
     return buttons
   }
-  const currentEvents: Event[] = getEvents()
+  let currentEvents: Event[] = getEvents()
+
   return (
     <SearchWrapper>
       <SearchInput
@@ -87,7 +101,7 @@ const Search = () => {
         isLoading ?
         <div>loading...</div>
       :
-        currentEvents.map((event) => {
+        currentEvents.map((event) => (
           <EventThumbnail
             key={event.id}
             id={event.id}
@@ -99,15 +113,15 @@ const Search = () => {
             location={event.location}
             comments={event.comments}
           />
-        })
+        ))
       }
       <PageNumberButtonWrapper>
         <div>Select page:</div>
         {pageButtons()}
         <div>Items per page:</div>
-        <SearchParamButton isSelected={pageSize === 5} onClick={() => setPageSize(5)}>5</SearchParamButton>
-        <SearchParamButton isSelected={pageSize === 15} onClick={() => setPageSize(15)}>15</SearchParamButton>
-        <SearchParamButton isSelected={pageSize === 22} onClick={() => setPageSize(25)}>25</SearchParamButton>
+        <SearchParamButton isSelected={pageSize === 5} onClick={() => changePageSize(5)}>5</SearchParamButton>
+        <SearchParamButton isSelected={pageSize === 15} onClick={() => changePageSize(15)}>15</SearchParamButton>
+        <SearchParamButton isSelected={pageSize === 25} onClick={() => changePageSize(25)}>25</SearchParamButton>
       </PageNumberButtonWrapper>
     </SearchWrapper>
   )
