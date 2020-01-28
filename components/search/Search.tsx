@@ -21,22 +21,20 @@ const SearchWrapper = styled.div`
   box-sizing: border-box;
 `
 
-const SearchParamButton = styled.div<{isSelected: boolean}>`
+const SearchParamButton = styled.button<{isSelected: boolean}>`
   font-weight: bold;
   align-self: center;
   height: fit-content;
-  width: 1em;
+  width: 2em;
   font-size: 12px;
   text-align: center;
   border-radius: 5px;
   margin: 5px;
   padding: 5px;
+  border: none;
   background: ${(props) => props.isSelected ? Colors.green : Colors.white};
   box-shadow: ${(props) => props.isSelected ? BoxShadows.focusedBoxShadow : BoxShadows.unfocusedBoxShadow};
-
-  &:hover {
-    box-shadow: ${BoxShadows.focusedBoxShadow};
-  }
+  cursor: pointer;
 `
 
 const SearchInput = styled(DebounceInput)`
