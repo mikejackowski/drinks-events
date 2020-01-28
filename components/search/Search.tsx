@@ -34,7 +34,6 @@ const SearchParamButton = styled.button<{isSelected: boolean}>`
   border: none;
   background: ${(props) => props.isSelected ? Colors.green : Colors.white};
   box-shadow: ${(props) => props.isSelected ? BoxShadows.focusedBoxShadow : BoxShadows.unfocusedBoxShadow};
-  cursor: pointer;
 `
 
 const SearchInput = styled(DebounceInput)`
@@ -174,22 +173,26 @@ const Search = () => {
         </EventsWrapper>
         :
           <EventsWrapper>
-            {currentEvents.map((event) => (
-              <Link key={event.id} href={'/e/[id]'} as={`/e/${event.id}`}>
-                <StyledLink>
-                  <EventThumbnail
-                    id={event.id}
-                    time={event.time}
-                    title={event.title}
-                    creator={event.creator}
-                    guests={event.guests}
-                    type={event.type}
-                    location={event.location}
-                    comments={event.comments}
-                  />
-                </StyledLink>
-              </Link>
-            ))}
+            {currentEvents.length > 0 ?
+              currentEvents.map((event) => (
+                <Link key={event.id} href={'/e/[id]'} as={`/e/${event.id}`}>
+                  <StyledLink>
+                    <EventThumbnail
+                      id={event.id}
+                      time={event.time}
+                      title={event.title}
+                      creator={event.creator}
+                      guests={event.guests}
+                      type={event.type}
+                      location={event.location}
+                      comments={event.comments}
+                    />
+                  </StyledLink>
+                </Link>
+              ))
+              :
+              <div>No events :(</div>
+            }
           </EventsWrapper>
         }
         <PageNumberButtonWrapper>

@@ -71,7 +71,7 @@ const NumberWrapper = styled.div`
 `
 
 
-const EventThumbnail = React.forwardRef((event: Event) => {
+const EventThumbnail = ((event: Event) => {
   const [userLat, setUserLat] = useState<number>(0)
   const [userLon, setUserLon] = useState<number>(0)
   useEffect(() => {

@@ -123,7 +123,7 @@ const BaseEvent = ({id, time, title, creator, guests, type, location, comments }
         <EventParamHeader>Guests:</EventParamHeader>
         {guests.length > 0 ?
           guests.map((guest) => {
-            return <BaseUser name={guest.name} avatarUrl={guest.avatarUrl}/>
+            return <BaseUser key={guest.name} name={guest.name} avatarUrl={guest.avatarUrl}/>
           })
           :
           <div>No guests :(</div>
@@ -133,7 +133,7 @@ const BaseEvent = ({id, time, title, creator, guests, type, location, comments }
       <EventParamHeader>Comments:</EventParamHeader>
         {comments.length > 0 &&
           comments.map((comment) => {
-            return <Comment user={comment.user} timestamp={comment.timestamp} message={comment.message}/>
+            return <Comment key={comment.timestamp} user={comment.user} timestamp={comment.timestamp} message={comment.message}/>
           })
         }
       </RowWrapper>
