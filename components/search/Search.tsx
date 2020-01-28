@@ -2,34 +2,96 @@ import styled from 'styled-components'
 import { useState, useEffect } from 'react'
 import {DebounceInput} from 'react-debounce-input'
 import axios from 'axios'
-import { Event } from '../../pages/e/event.types'
+import { Event } from '../common/event.types'
 import EventThumbnail from '../event/EventThumbnail'
 import Link from 'next/link'
 import React from 'react'
+import { Colors, BoxShadows } from '../common/colors'
+import { FlexWrapper } from '../common/common'
+import Loader from 'react-loader-spinner'
 
 const SearchWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: center;
+  padding: 20px;
+  margin-top: 10px;
+  font-family: 'Lato', sans-serif;
+  box-sizing: border-box;
 `
 
 const SearchParamButton = styled.div<{isSelected: boolean}>`
-  display: grid;
-  justify-content: center;
-  place-items: center;
   font-weight: bold;
-  border: 1px solid black;
-  background: ${(props) => props.isSelected ? 'aqua' : 'none'};
+  align-self: center;
+  height: fit-content;
+  width: 1em;
+  font-size: 12px;
+  text-align: center;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+  background: ${(props) => props.isSelected ? Colors.green : Colors.white};
+  box-shadow: ${(props) => props.isSelected ? BoxShadows.focusedBoxShadow : BoxShadows.unfocusedBoxShadow};
+
+  &:hover {
+    box-shadow: ${BoxShadows.focusedBoxShadow};
+  }
 `
 
 const SearchInput = styled(DebounceInput)`
-  width: 50%;
-  border: 1px solid black;
+  width: 100%;
+  padding: 15px 0 15px 10px;
+  line-height: 40px;
+  font-size: 30px;
+  caret-color: ${Colors.gold};
+  color: ${Colors.black};
+
+  ::placeholder,
+  ::-webkit-input-placeholder {
+    color: ${Colors.gray};
+    margin-left: 15px;
+    font-weight: 300;
+    font-size: 1em;
+    font-size: 30px;
+
+    @media screen and (max-width: 535px) {
+      font-size: 0.6em;
+    }
+  }
 `
 
 const PageNumberButtonWrapper = styled.div`
   display: flex;
+  width: 100%;
+  justify-content: space-around;
+
+  @media screen and (max-width: 535px) {
+    flex-wrap: wrap;
+  }
+`
+
+const StyledLink = styled.a`
+  text-decoration: none;
+  padding: 10px;
+`
+
+const SearchHeader = styled.h1`
+  padding-top: 10px;
+  margin: 0;
+  color: ${Colors.black};
+`
+
+const EventsWrapper = styled(FlexWrapper)`
   justify-content: space-around;
 `
 
-
+const PageHeaders = styled.h2`
+  color: ${Colors.black};
+  font-size: 20px;
+  font-weight: 300px;
+  margin-right: 5px;
+`
 
 const Search = () => {
   const [pageNo, setPageNo] = useState(0)
@@ -37,7 +99,7 @@ const Search = () => {
   const [searchQ, setSearchQ] = useState('')
   const [allEvents, setEvents] = useState<Event[]>([])
   const [isLoading, setLoading] = useState(false)
-
+  const textInputRef = React.createRef<HTMLInputElement>();
   /**
    * setting up local state as database
    */
@@ -57,6 +119,7 @@ const Search = () => {
 
   useEffect(() => {
     getInitialData();
+    textInputRef.current ? textInputRef.current.focus() : null
   }, [])
 
   const getEvents = () => {
@@ -76,61 +139,76 @@ const Search = () => {
     }
   }
 
-  const pageButtons = () => {
-    let buttons: JSX.Element[] = []
+  const getPageButtons = () => {
     let displayEvents = allEvents.length;
     if (searchQ !== '') {
       displayEvents = allEvents.filter((event) => event.title.includes(searchQ)).length
     }
     let totalPages = Math.floor(displayEvents / pageSize) + 1
-    for (let i = 0; i < totalPages; i++) {
-      buttons.push(
-        <SearchParamButton key={i} isSelected={pageNo === i} onClick={() => setPageNo(i)}>{i+1}</SearchParamButton>
-      )
-    }
-    return buttons
+    return [...Array(totalPages).keys()];
   }
+
+  let buttons: number[] = getPageButtons();
   let currentEvents: Event[] = getEvents()
   return (
-    <SearchWrapper onClick={() => {}}>
+    <SearchWrapper>
       <SearchInput
         minLength={1}
-        debounceTimeout={300}
+        inputRef={textInputRef}
+        debounceTimeout={400}
         value={searchQ}
-        placeholder={'asdf'}
+        placeholder={`Type anything to search. Try Silicon Rhino`}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           setPageNo(0)
           setSearchQ(event.target.value)
         }}
       />
-      <div>events: </div>
-      {
-        isLoading ?
-        <div>loading...</div>
-      :
-        currentEvents.map((event) => (
-          <Link passHref={true} key={event.id} href={'/e/[id]'} as={`/e/${event.id}`}>
-            <EventThumbnail
-              id={event.id}
-              time={event.time}
-              title={event.title}
-              creator={event.creator}
-              guests={event.guests}
-              type={event.type}
-              location={event.location}
-              comments={event.comments}
-            />
-          </Link>
-        ))
-      }
-      <PageNumberButtonWrapper>
-        <div>Select page:</div>
-        {pageButtons()}
-        <div>Items per page:</div>
-        <SearchParamButton isSelected={pageSize === 5} onClick={() => changePageSize(5)}>5</SearchParamButton>
-        <SearchParamButton isSelected={pageSize === 15} onClick={() => changePageSize(15)}>15</SearchParamButton>
-        <SearchParamButton isSelected={pageSize === 25} onClick={() => changePageSize(25)}>25</SearchParamButton>
-      </PageNumberButtonWrapper>
+      <FlexWrapper>
+        <SearchHeader>Events:</SearchHeader>
+        {isLoading ?
+        <EventsWrapper>
+          <Loader
+            type="Puff"
+            color={Colors.green}
+            height={100}
+            width={100}
+          />
+        </EventsWrapper>
+        :
+          <EventsWrapper>
+            {currentEvents.map((event) => (
+              <Link key={event.id} href={'/e/[id]'} as={`/e/${event.id}`}>
+                <StyledLink>
+                  <EventThumbnail
+                    id={event.id}
+                    time={event.time}
+                    title={event.title}
+                    creator={event.creator}
+                    guests={event.guests}
+                    type={event.type}
+                    location={event.location}
+                    comments={event.comments}
+                  />
+                </StyledLink>
+              </Link>
+            ))}
+          </EventsWrapper>
+        }
+        <PageNumberButtonWrapper>
+          <FlexWrapper>
+            <PageHeaders>Select page:</PageHeaders>
+            {buttons.map((pageNumber) => (
+              <SearchParamButton key={pageNumber} isSelected={pageNo === pageNumber} onClick={() => setPageNo(pageNumber)}>{pageNumber+1}</SearchParamButton>
+            ))}
+          </FlexWrapper>
+          <FlexWrapper>
+            <PageHeaders>Items per page:</PageHeaders>
+            <SearchParamButton isSelected={pageSize === 5} onClick={() => changePageSize(5)}>5</SearchParamButton>
+            <SearchParamButton isSelected={pageSize === 15} onClick={() => changePageSize(15)}>15</SearchParamButton>
+            <SearchParamButton isSelected={pageSize === 25} onClick={() => changePageSize(25)}>25</SearchParamButton>
+          </FlexWrapper>
+        </PageNumberButtonWrapper>
+      </FlexWrapper>
     </SearchWrapper>
   )
 }

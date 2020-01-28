@@ -10,6 +10,6 @@ export const Colors = {
 }
 
 export const BoxShadows = {
-  unfocusedBoxShadow: '1px 1px 10px 5px rgba(0,0,0,0.2)',
-  focusedBoxShadow: '1px 1px 10px 5px rgba(0,0,0,0.5)',
+  unfocusedBoxShadow: '1px 1px 10px -10px rgba(0,0,0,0.2)',
+  focusedBoxShadow: '0px 15px 29px -10px rgba(0,0,0,0.5)',
 }

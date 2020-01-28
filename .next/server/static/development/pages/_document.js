@@ -1510,26 +1510,21 @@ function ownKeys(object, enumerableOnly) { var keys = _babel_runtime_corejs2_cor
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_6__["default"])(target, key, source[key]); }); } else if (_babel_runtime_corejs2_core_js_object_get_own_property_descriptors__WEBPACK_IMPORTED_MODULE_2___default.a) { _babel_runtime_corejs2_core_js_object_define_properties__WEBPACK_IMPORTED_MODULE_1___default()(target, _babel_runtime_corejs2_core_js_object_get_own_property_descriptors__WEBPACK_IMPORTED_MODULE_2___default()(source)); } else { ownKeys(Object(source)).forEach(function (key) { _babel_runtime_corejs2_core_js_object_define_property__WEBPACK_IMPORTED_MODULE_0___default()(target, key, _babel_runtime_corejs2_core_js_object_get_own_property_descriptor__WEBPACK_IMPORTED_MODULE_3___default()(source, key)); }); } } return target; }
 
- // Import styled components ServerStyleSheet
 
 
 class MyDocument extends next_document__WEBPACK_IMPORTED_MODULE_9___default.a {
   static getInitialProps({
     renderPage
   }) {
-    // Step 1: Create an instance of ServerStyleSheet
-    const sheet = new styled_components__WEBPACK_IMPORTED_MODULE_10__["ServerStyleSheet"](); // Step 2: Retrieve styles from components in the page
-
+    const sheet = new styled_components__WEBPACK_IMPORTED_MODULE_10__["ServerStyleSheet"]();
     const page = renderPage(App => props => sheet.collectStyles(__jsx(App, Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_7__["default"])({}, props, {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 12
+        lineNumber: 9
       },
       __self: this
-    })))); // Step 3: Extract the styles as <style> tags
-
-    const styleTags = sheet.getStyleElement(); // Step 4: Pass styleTags as a prop
-
+    }))));
+    const styleTags = sheet.getStyleElement();
     return _objectSpread({}, page, {
       styleTags
     });
@@ -1539,37 +1534,39 @@ class MyDocument extends next_document__WEBPACK_IMPORTED_MODULE_9___default.a {
     return __jsx("html", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 24
+        lineNumber: 19
       },
       __self: this
     }, __jsx(next_document__WEBPACK_IMPORTED_MODULE_9__["Head"], {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 25
+        lineNumber: 20
       },
       __self: this
-    }, __jsx("title", {
+    }, __jsx("link", {
+      href: "https://fonts.googleapis.com/css?family=Bangers|Lato&display=swap",
+      rel: "stylesheet",
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 26
+        lineNumber: 21
       },
       __self: this
-    }, "My page"), this.props.styleTags), __jsx("body", {
+    }), this.props.styleTags), __jsx("body", {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 30
+        lineNumber: 24
       },
       __self: this
     }, __jsx(next_document__WEBPACK_IMPORTED_MODULE_9__["Main"], {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 31
+        lineNumber: 25
       },
       __self: this
     }), __jsx(next_document__WEBPACK_IMPORTED_MODULE_9__["NextScript"], {
       __source: {
         fileName: _jsxFileName,
-        lineNumber: 32
+        lineNumber: 26
       },
       __self: this
     })));

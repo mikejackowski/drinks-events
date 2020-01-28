@@ -2,7 +2,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import BaseEvent from '../../components/event/Event'
 import { NextPage } from 'next';
-import { Event } from './event.types'
+import { Event } from '../../components/common/event.types'
 
 const EventWrapper = styled.div`
 `
